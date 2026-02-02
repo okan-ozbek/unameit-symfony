@@ -32,7 +32,6 @@ class Task
     private TaskStatus $status;
 
     #[Assert\DateTime(message: "The due date '{{ value }}' is not a valid datetime.")]
-    #[Assert\GreaterThan("today", message: "The due date must be in the future.")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTime $dueDate = null;
 
