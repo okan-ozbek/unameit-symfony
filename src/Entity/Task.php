@@ -17,21 +17,15 @@ class Task
     #[ORM\Column(nullable: false)]
     private int $id;
 
-    #[Assert\NotBlank(message: "The title cannot be blank.")]
     #[ORM\Column(length: 255, nullable: false)]
     private string $title;
 
-    // Assert is string and optional
-    #[Assert\Type('string', message: "The description must be a string.")]
-    #[Assert\Length(max: 1000, maxMessage: "The description cannot be longer than {{ limit }} characters.")]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[Assert\Choice(choices: [TaskStatus::PENDING, TaskStatus::IN_PROGRESS, TaskStatus::DONE], message: "Choose a valid status.")]
     #[ORM\Column(type: Types::TEXT, enumType: TaskStatus::class)]
     private TaskStatus $status;
 
-    #[Assert\DateTime(message: "The due date '{{ value }}' is not a valid datetime.")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTime $dueDate = null;
 

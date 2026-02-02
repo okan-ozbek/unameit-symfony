@@ -57,6 +57,8 @@ readonly class TaskService
 
     private function statusDoneWithPastDueDate(Task $task): bool
     {
-        return $task->getStatus() === TaskStatus::DONE && $task->getDueDate() !== null && $task->getDueDate() < new \DateTime();
+        return $task->getStatus() === TaskStatus::DONE &&
+            $task->getDueDate() !== null &&
+            $task->getDueDate() < new \DateTime();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller\V1;
 
+use App\DTO\V1\TaskDTO;
 use App\Entity\Task;
 use App\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,19 +16,19 @@ class TaskController extends AbstractController
 
     }
 
-    #[Route(path: '/v1/tasks', name: 'v1_tasks', methods: ['GET'])]
+    #[Route(path: '/v1/tasks', name: 'v1_task_fetch_all', methods: ['GET'])]
     public function index(): Response
     {
         $tasks = $this->taskService->fetchAll();
 
         if ($tasks === []) {
-            return $this->json(['message' => 'No tasks found.'], Response::HTTP_NO_CONTENT);
+            return $this->json(['message' => 'No tasks found.'], Response::HTTP_NOT_FOUND);
         }
 
         return $this->json(['tasks' => $tasks], Response::HTTP_OK);
     }
 
-    #[Route(path: '/v1/tasks/{id}', name: 'v1_task', methods: ['GET'])]
+    #[Route(path: '/v1/tasks/{id}', name: 'v1_task_fetch', methods: ['GET'])]
     public function show(?Task $task): Response
     {
         if ($task === null) {
@@ -37,13 +38,13 @@ class TaskController extends AbstractController
         return $this->json(['task' => $task], Response::HTTP_OK);
     }
 
-    #[Route(path: '/v1/tasks', name: 'v1_tasks', methods: ['POST'])]
+    #[Route(path: '/v1/tasks', name: 'v1_task_create', methods: ['POST'])]
     public function store(
-        #[MapRequestPayload] Task $task
+        #[MapRequestPayload] TaskDTO $payload
     ): Response
     {
         try {
-            $task = $this->taskService->create($task);
+            $task = $this->taskService->create($payload->createFromDTO());
 
             if ($task === null) {
                 return $this->json(['message' => 'Task due date cannot be in the past'], Response::HTTP_BAD_REQUEST);
@@ -55,9 +56,9 @@ class TaskController extends AbstractController
         return $this->json(['task' => $task], Response::HTTP_CREATED);
     }
 
-    #[Route(path: '/v1/tasks/{id}', name: 'v1_task', methods: ['PATCH'])]
+    #[Route(path: '/v1/tasks/{id}', name: 'v1_task_update', methods: ['PATCH'])]
     public function update(
-        ?Task $task, #[MapRequestPayload] Task $payload
+        ?Task $task, #[MapRequestPayload] TaskDTO $payload
     ): Response
     {
         if ($task === null) {
@@ -65,7 +66,7 @@ class TaskController extends AbstractController
         }
 
         try {
-            $task = $this->taskService->update($payload);
+            $task = $this->taskService->update($payload->createFromDTO());
 
             if ($task === null) {
                 return $this->json(['message' => 'Task due date cannot be in the past'], Response::HTTP_BAD_REQUEST);
@@ -77,11 +78,11 @@ class TaskController extends AbstractController
         return $this->json(['message' => 'Task was successfully updated.'], Response::HTTP_OK);
     }
 
-    #[Route(path: '/v1/tasks/{id}', name: 'v1_task', methods: ['PUT'])]
+    #[Route(path: '/v1/tasks/{id}', name: 'v1_task_delete', methods: ['DELETE'])]
     public function destroy(?Task $task): Response
     {
         if ($task === null) {
-            $this->json(['message' => 'Task was successfully deleted.'], Response::HTTP_OK);
+            return $this->json(['message' => 'Task was successfully deleted.'], Response::HTTP_OK);
         }
 
         try {
