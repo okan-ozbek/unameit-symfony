@@ -15,7 +15,7 @@ class TaskController extends AbstractController
     }
 
     #[Route(path: '/v1/tasks/{id}', name: 'v1_task', methods: ['GET'])]
-    public function show($id): Response
+    public function show(int $id): Response
     {
         return $this->json(['message' => 'Hello world'], Response::HTTP_OK);
     }
